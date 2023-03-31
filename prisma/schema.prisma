@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  CDD
+  CDI
+  FREELANCE
+  STUDENT
+}
+
+model Renter {
+  address               String     @id
+  last_3_wage_avg       Int
+  status                Status
+  last_name             String
+  first_name            String
+  birth_date            DateTime
+  imposition            Int
+  employer              String
+  Campaign              Campaign[]
+  verifier              Verifier   @relation(fields: [verifierPublicKey], references: [publicKey])
+  verifierPublicKey     String
+  verificationSignature String
+  score                 Int
+}
+
+model Verifier {
+  publicKey String   @id
+  name      String
+  Renter    Renter[]
+}
+
+model Campaign {
+  Renter        Renter   @relation(fields: [renterAddress], references: [address])
+  renterAddress String   @id
+  premium       Float
+  leaseExpiry   DateTime
+  toCollect     Int
+  rent          Int
+  createdAt     DateTime @default(now())
+}
