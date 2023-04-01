@@ -40,11 +40,12 @@ model Verifier {
 }
 
 model Campaign {
-  Renter        Renter   @relation(fields: [renterAddress], references: [address])
-  renterAddress String   @id
-  premium       Float
-  leaseExpiry   DateTime
-  toCollect     Int
-  rent          Int
-  createdAt     DateTime @default(now())
+  Renter          Renter   @relation(fields: [renterAddress], references: [address])
+  contractAddress String   @id
+  renterAddress   String
+  premium         Float
+  leaseExpiry     DateTime
+  toCollect       Int
+  rent            Int
+  createdAt       DateTime @default(now())
 }
