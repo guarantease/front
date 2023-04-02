@@ -1,6 +1,11 @@
 "use client";
+import { useAccount } from "@/hooks/wallet";
+import { Tezos } from "@/utils/wallet";
 import { Campaign } from "@prisma/client";
-import { useState } from "react";
+import { BigMapAbstraction, MichelsonMap, UnitValue } from "@taquito/taquito";
+import { Address } from "cluster";
+import { useReducer, useRef, useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
 export const HomePopup = ({
   campaign,
   onClose,
@@ -8,10 +13,46 @@ export const HomePopup = ({
   campaign: Campaign;
   onClose: () => void;
 }) => {
-  console.log(Date.now(), new Date(campaign.leaseExpiry).getTime());
+  const amountRef = useRef<HTMLInputElement>(null);
+  const { account, refetch } = useAccount();
+
+  async function guarantee() {
+    const amount = Math.floor(Number(amountRef.current?.value || 0));
+    const usdc = await Tezos.wallet.at("KT1GaP9kQtU2ETjNTK5egQ4PpCbLCG5Lm9HD");
+    const allowance = (
+      (await (
+        (await usdc.storage()) as { ledger: BigMapAbstraction }
+      ).ledger.get(account?.address as string)) as {
+        allowance: MichelsonMap<any, any>;
+      }
+    ).allowance.get(campaign.contractAddress);
+    if (!allowance || allowance.lt(amount)) {
+      await new Promise<void>(async (res, rej) => {
+        (
+          await usdc.methods
+            .approve(
+              campaign.contractAddress,
+              Number(amount.toString() + "0".repeat(18))
+            )
+            .send()
+        )
+          .confirmationObservable(3)
+          .subscribe(() => res());
+      });
+    }
+    const sc = await Tezos.wallet.at(campaign.contractAddress);
+    const tx = sc.methods.buy_shares(amount.toString() + "0".repeat(18)).send();
+    await toast.promise(tx, {
+      success: `Added $${amount}`,
+      error: "Guarantee failed",
+      loading: "Operation pending",
+    });
+  }
 
   return (
     <div className="absolute w-screen h-screen top-0 left-0 bg-[rgba(0,0,0,0.36)]">
+      <Toaster />
+
       <div className="absolute bg-white rounded-xl py-6 px-12 gap-3 flex flex-col w-1/4 left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
         <div className="w-full items-center flex justify-between">
           <h2 className="text-xl">
@@ -55,6 +96,7 @@ export const HomePopup = ({
           <label>Amount ($)</label>
           <input
             type="number"
+            ref={amountRef}
             className="w-full px-3 py-2 bg-[rgba(0,0,0,0.03)] border-[rgba(0,0,0,0.13)] border-2 rounded-lg"
           />
         </div>
@@ -71,7 +113,14 @@ export const HomePopup = ({
           }).format(new Date(campaign.leaseExpiry))}
           ).
         </p>
-        <button className="hover:bg-primary-400 bg-primary-500 text-white w-full py-2 font-bold rounded-lg">
+        <button
+          className="hover:bg-primary-400 bg-primary-500 text-white w-full py-2 font-bold rounded-lg"
+          onClick={() => {
+            refetch().then(() => {
+              guarantee();
+            });
+          }}
+        >
           Guarantee
         </button>
       </div>

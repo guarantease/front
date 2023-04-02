@@ -1,3 +1,5 @@
+"use client";
+
 import { wallet } from "@/utils/wallet";
 import { AccountInfo, TezosOperationType } from "@airgap/beacon-sdk";
 import { useEffect, useState } from "react";

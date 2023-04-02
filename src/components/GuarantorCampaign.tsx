@@ -5,6 +5,9 @@ import LoadingLiquidity from "./LoadingLiquidity";
 import { Campaign as ICampaign, Renter, Verifier } from "@prisma/client";
 import { displayPrice } from "@/utils/price";
 import { getVerifier } from "@/utils/crypto";
+import { useEffect, useState } from "react";
+import { Tezos } from "@/utils/wallet";
+import { useAccount } from "@/hooks/wallet";
 
 export const GuarantorCampaign = ({
   campaign,

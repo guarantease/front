@@ -8,7 +8,9 @@ import { Campaign as ICampaign, Renter, Verifier } from "@prisma/client";
 import { displayPrice } from "@/utils/price";
 import { getVerifier } from "@/utils/crypto";
 import { HomePopup } from "./HomePopup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAccount } from "@/hooks/wallet";
+import { Tezos } from "@/utils/wallet";
 
 export const Campaign = ({
   campaign,
@@ -16,6 +18,22 @@ export const Campaign = ({
   campaign: ICampaign & { Renter: Renter & { verifier: Verifier } };
 }) => {
   const [opened, setOpened] = useState(false);
+  const [collected, setCollected] = useState(0);
+
+  useEffect(() => {
+    async function query() {
+      const sc = await Tezos.contract.at(campaign.contractAddress);
+      setCollected(
+        Number(
+          (await sc.views.getTotalSupply([["Uint"]]).read())
+            .div("1e18")
+            .toString()
+        )
+      );
+    }
+
+    query();
+  }, []);
 
   return (
     <div className="place-items-center grid grid-cols-8 bg-[rgba(0,0,0,0.02)] border-2 border-[rgba(0,0,0,0.13)] rounded-xl py-6 px-12">
@@ -37,7 +55,7 @@ export const Campaign = ({
           year: "2-digit",
         }).format(new Date(campaign.leaseExpiry))}
       </p>
-      <LoadingLiquidity current={0} goal={campaign.toCollect} />
+      <LoadingLiquidity current={collected} goal={campaign.toCollect} />
       <Button onClick={() => setOpened(true)}>Guarantee</Button>
 
       {opened && (

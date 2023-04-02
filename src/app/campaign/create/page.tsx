@@ -19,7 +19,7 @@ export default function CreateRenter() {
   const create = async () => {
     await refetch();
     if (!account) return;
-    const data = await (
+    await (
       await fetch(`/api/renter/create`, {
         method: "POST",
         headers: {
@@ -41,7 +41,7 @@ export default function CreateRenter() {
         }),
       })
     ).json();
-    const data2 = await (
+    await (
       await fetch(`/api/campaign/create`, {
         method: "POST",
         headers: {

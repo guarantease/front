@@ -5,7 +5,7 @@ import { SigningType } from "@airgap/beacon-sdk";
 import { useEffect } from "react";
 import { char2Bytes } from "@taquito/utils";
 
-export default function Sign({ searchParams }) {
+export default function Sign({ searchParams }: { searchParams: any }) {
   const { account, refetch } = useAccount();
 
   useEffect(() => {
@@ -22,6 +22,7 @@ export default function Sign({ searchParams }) {
           sourceAddress: account.address,
           payload: payloadBytes,
         });
+        console.log(sig.signature);
       } else {
         refetch();
       }

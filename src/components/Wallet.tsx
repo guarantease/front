@@ -2,12 +2,17 @@
 
 import { useAccount } from "@/hooks/wallet";
 import { wallet } from "@/utils/wallet";
+import { NetworkType } from "@airgap/beacon-sdk";
 import { useCallback } from "react";
 
 export const Wallet = () => {
   const queryPerms = useCallback(async () => {
     try {
-      const permissions = await wallet.client.requestPermissions();
+      const permissions = await wallet.client.requestPermissions({
+        network: {
+          type: NetworkType.GHOSTNET,
+        },
+      });
       refetch();
     } catch (error) {
       console.error(error);
