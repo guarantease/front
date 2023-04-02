@@ -7,7 +7,6 @@ import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Campaign, Renter, Verifier } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { Tezos } from "@/utils/wallet";
 import { displayPrice } from "@/utils/price";
 import { getVerifier } from "@/utils/crypto";
 
@@ -21,7 +20,9 @@ export default function RenterPage({
 
   useEffect(() => {
     async function query() {
-      const sc = await Tezos.contract.at(campaign.contractAddress);
+      const sc = await (
+        await import("@/utils/wallet")
+      ).Tezos.contract.at(campaign.contractAddress);
       setCollected(
         Number(
           (await sc.views.getTotalSupply([["Uint"]]).read())

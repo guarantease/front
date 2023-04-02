@@ -1,11 +1,8 @@
 "use client";
 
 import { useAccount } from "@/hooks/wallet";
-import { Tezos, wallet } from "@/utils/wallet";
 import { useRef } from "react";
-import { Toaster, toast } from "react-hot-toast";
-import { code } from "../../../utils/campaign";
-
+import { toast } from "react-hot-toast";
 export default function CreateRenter() {
   const fnameRef = useRef<HTMLInputElement>(null);
   const lnameRef = useRef<HTMLInputElement>(null);

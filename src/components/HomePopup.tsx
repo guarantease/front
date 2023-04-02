@@ -1,6 +1,5 @@
 "use client";
 import { useAccount } from "@/hooks/wallet";
-import { Tezos } from "@/utils/wallet";
 import { Campaign } from "@prisma/client";
 import { BigMapAbstraction, MichelsonMap, UnitValue } from "@taquito/taquito";
 import { Address } from "cluster";
@@ -18,7 +17,9 @@ export const HomePopup = ({
 
   async function guarantee() {
     const amount = Math.floor(Number(amountRef.current?.value || 0));
-    const usdc = await Tezos.wallet.at("KT1GaP9kQtU2ETjNTK5egQ4PpCbLCG5Lm9HD");
+    const usdc = await (
+      await import("@/utils/wallet")
+    ).Tezos.wallet.at("KT1GaP9kQtU2ETjNTK5egQ4PpCbLCG5Lm9HD");
     const allowance = (
       (await (
         (await usdc.storage()) as { ledger: BigMapAbstraction }
@@ -40,7 +41,9 @@ export const HomePopup = ({
           .subscribe(() => res());
       });
     }
-    const sc = await Tezos.wallet.at(campaign.contractAddress);
+    const sc = await (
+      await import("@/utils/wallet")
+    ).Tezos.wallet.at(campaign.contractAddress);
     const tx = sc.methods.buy_shares(amount.toString() + "0".repeat(18)).send();
     await toast.promise(tx, {
       success: `Added $${amount}`,

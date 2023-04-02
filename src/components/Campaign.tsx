@@ -9,8 +9,6 @@ import { displayPrice } from "@/utils/price";
 import { getVerifier } from "@/utils/crypto";
 import { HomePopup } from "./HomePopup";
 import { useEffect, useState } from "react";
-import { useAccount } from "@/hooks/wallet";
-import { Tezos } from "@/utils/wallet";
 
 export const Campaign = ({
   campaign,
@@ -22,7 +20,9 @@ export const Campaign = ({
 
   useEffect(() => {
     async function query() {
-      const sc = await Tezos.contract.at(campaign.contractAddress);
+      const sc = await (
+        await import("@/utils/wallet")
+      ).Tezos.contract.at(campaign.contractAddress);
       setCollected(
         Number(
           (await sc.views.getTotalSupply([["Uint"]]).read())
