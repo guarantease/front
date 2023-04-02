@@ -19,9 +19,13 @@ export const Header = () => {
         />
       </Link>
       <div className="flex items-center gap-12 font-bold text-primary-500 uppercase">
-        <Link href={"/landlord"}>Landlord</Link>
-        <Link href={`/renter/${account?.address || ""}`}>Renter</Link>
-        <Link href={"/guarantor"}>Guarantor</Link>
+        {account?.address && (
+          <>
+            <Link href={"/landlord"}>Landlord</Link>
+            <Link href={`/renter/${account?.address || ""}`}>Renter</Link>
+            <Link href={"/guarantor"}>Guarantor</Link>
+          </>
+        )}
         <Wallet />
       </div>
     </div>

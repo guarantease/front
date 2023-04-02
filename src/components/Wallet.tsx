@@ -20,7 +20,6 @@ export const Wallet = () => {
   }, []);
 
   const { account, refetch } = useAccount();
-
   return !account ? (
     <button
       className="flex items-center gap-3 py-2 px-3 bg-dark rounded-xl capitalize font-medium cursor-pointer text-white"

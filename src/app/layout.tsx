@@ -14,11 +14,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-[100vh] flex flex-col justify-between">
+      <body className="min-h-[100vh] h-max flex flex-col justify-between gap-8">
         <Header />
-        <div className="p-12 flex flex-col gap-9 h-[calc(100vh-3rem-60px-1.5rem)]">
-          {children}
-        </div>
+        <div className="p-12 flex flex-col gap-9 h-[max]">{children}</div>
         <Footer />
       </body>
     </html>
